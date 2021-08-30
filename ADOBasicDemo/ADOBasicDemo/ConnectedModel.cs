@@ -1,38 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
+using System.Configuration;
+
 namespace ADOBasicDemo
 {
     class ConnectedModel
     {
         #region Database Objects
-        SqlConnection sqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["ADOBasicDemo.Settings1.ConStr"].ConnectionString);
+        SqlConnection sqlConnection = 
+            new SqlConnection(ConfigurationManager.ConnectionStrings["ADOBasicDemo.Settings1.ConStr"].ConnectionString);
         SqlCommand sqlCommand = new SqlCommand();
         SqlDataReader dr;
         #endregion
-
         public bool SaveEmployee(EmpMaster empMaster)
         {
             try
             {
                 sqlCommand.Connection = sqlConnection;
-                sqlCommand.CommandText = SP.SaveEmployee.ToString();
-         
+                sqlCommand.CommandText = SP.SaveEmployee.ToString();      
                 sqlCommand.Parameters.Add("@EmpCode", SqlDbType.Int).Value = empMaster.EmpCode;
                 sqlCommand.Parameters.Add("@EmpName", SqlDbType.VarChar,50).Value = empMaster.EmpName;
                 sqlCommand.Parameters.Add("@DateOfBirth", SqlDbType.DateTime).Value = empMaster.DateOfBirth;
                 sqlCommand.Parameters.Add("@Email",SqlDbType.VarChar,50).Value=empMaster.Email;
                 sqlCommand.Parameters.Add("@DeptCode", SqlDbType.Int).Value = empMaster.DeptCode;
                 sqlCommand.CommandType = CommandType.StoredProcedure;
-                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                if (sqlConnection.State == ConnectionState.Closed)
                 {
                     sqlConnection.Open();
                 }
                 sqlCommand.ExecuteNonQuery();
                 return true;
-
             }catch(SqlException ex)
             {
                 
@@ -199,6 +198,39 @@ namespace ADOBasicDemo
             }
             finally
             {
+                sqlConnection.Close();
+            }
+        }
+
+        public bool ValidateUser(string email,string pass)
+        {
+            try
+            {
+                sqlCommand.Connection = sqlConnection;
+                sqlCommand.CommandText = SP.ValiadateEmployee.ToString();
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+                sqlCommand.Parameters.Add("@Email", SqlDbType.VarChar, 50).Value = email;
+                sqlCommand.Parameters.Add("@Pass", SqlDbType.VarChar, 20).Value = pass;
+                if (sqlConnection.State == ConnectionState.Closed)
+                {
+                    sqlConnection.Open();
+                }
+                dr = sqlCommand.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }catch(Exception ex)
+            {
+                return false;
+            }
+            finally
+            {
+              
                 sqlConnection.Close();
             }
         }

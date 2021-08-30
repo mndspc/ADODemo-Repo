@@ -125,5 +125,32 @@ namespace ADOBasicDemo
                 return empMasters;
             }
         }
+
+        public bool ValidateUser(string email,string pass)
+        {
+            try
+            {
+                SqlCommand sqlCommand = new SqlCommand();
+                sqlCommand.Connection = sqlConnection;
+                sqlCommand.CommandText = SP.ValiadateEmployee.ToString();
+                sqlCommand.Parameters.Add("@Email",SqlDbType.VarChar,50).Value=email;
+                sqlCommand.Parameters.Add("@Pass", SqlDbType.VarChar, 20).Value = pass;
+                sqlDataAdapter.SelectCommand = sqlCommand;
+                dataSet.Reset();
+                sqlDataAdapter.Fill(dataSet, "userinfo");
+                if (dataSet.Tables["userinfo"].Rows.Count > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }catch(Exception ex)
+            {
+                return false;
+            }
+        }
+
     }
 }

@@ -8,6 +8,6 @@ namespace ADOBasicDemo
 {
     enum SP
     {
-        SaveEmployee,DeleteEmployee,GetEmpByCode
+        SaveEmployee,DeleteEmployee,GetEmpByCode, ValiadateEmployee
     }
 }
